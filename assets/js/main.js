@@ -6,6 +6,21 @@
 
   var doc = document;
 
+  /* ---------- Hero background video ---------- */
+  var heroVideo = doc.getElementById("heroVideo");
+  if (heroVideo) {
+    var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduceMotion) {
+      try { heroVideo.pause(); } catch (e) {}
+      heroVideo.removeAttribute("autoplay");
+    } else {
+      heroVideo.addEventListener("playing", function () { heroVideo.classList.add("ready"); });
+      var tryPlay = function () { var p = heroVideo.play(); if (p && p.catch) p.catch(function () {}); };
+      if (heroVideo.readyState >= 2) tryPlay();
+      heroVideo.addEventListener("canplay", tryPlay);
+    }
+  }
+
   /* ---------- Nav: solid on scroll ---------- */
   var nav = doc.getElementById("nav");
   function onScroll() {
