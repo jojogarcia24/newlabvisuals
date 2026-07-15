@@ -684,7 +684,7 @@ section { position: relative; }
 .ios-steps b{ color:var(--accent-2); }
 .ios-share{ width:16px; height:16px; stroke:var(--accent-2); color:var(--accent-2); vertical-align:middle; }
 .install-banner__act{ display:flex; align-items:center; gap:8px; flex-shrink:0; }
-.install-banner__close{ width:30px; height:30px; border-radius:50%; color:var(--cream-dim); font-size:18px; line-height:1; display:grid; place-items:center; }
+.install-banner__close{ flex-shrink:0; width:42px; height:42px; border-radius:50%; color:var(--cream-dim); font-size:22px; line-height:1; display:grid; place-items:center; border:1px solid var(--hair-light); }
 .install-banner__close:hover{ background:var(--ink-2); color:var(--paper); }
 .install-banner--expanded{ align-items:flex-start; }
 @media (max-width:520px){

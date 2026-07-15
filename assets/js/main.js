@@ -138,6 +138,23 @@
     window.addEventListener("keydown", function (e) { if (e.key === "Escape") closeMp(); });
   }
 
+  /* ---------- Matterport preview thumbnails (best-effort via oEmbed) ---------- */
+  doc.querySelectorAll(".tour-card[data-mp]").forEach(function (card) {
+    var id = card.getAttribute("data-mp");
+    var apply = function (url) {
+      if (!url) return;
+      var img = card.querySelector(".tour-card__img");
+      if (!img) { img = doc.createElement("img"); img.className = "tour-card__img"; img.alt = ""; img.loading = "lazy"; card.insertBefore(img, card.firstChild); }
+      img.onerror = function () { img.remove(); };
+      img.style.display = "";
+      img.src = url;
+    };
+    fetch("https://my.matterport.com/api/v1/models/oembed?format=json&url=" + encodeURIComponent("https://my.matterport.com/show/?m=" + id))
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (j) { if (j && j.thumbnail_url) apply(j.thumbnail_url); })
+      .catch(function () { /* keep the direct thumb / gradient fallback */ });
+  });
+
   /* ---------- Contact form (demo) ---------- */
   var form = doc.getElementById("contactForm");
   if (form) {
@@ -177,35 +194,46 @@
   function showBanner() { if (banner && !dismissed()) banner.hidden = false; }
   function hideBanner() { if (banner) banner.hidden = true; }
 
-  // Android / desktop Chromium: native one-click prompt available.
+  var genericSteps = doc.getElementById("genericSteps");
+  var installGo = doc.getElementById("installGo");
+  // mode: 'prompt' (one-tap Install works) | 'ios' (Share→Add) | 'generic' (browser menu)
+  function setMode(mode) {
+    if (installGo) installGo.hidden = mode !== "prompt";      // only offer one-tap where it actually installs
+    if (iosSteps) iosSteps.hidden = mode !== "ios";
+    if (genericSteps) genericSteps.hidden = mode !== "generic";
+  }
+
+  // The manual entry point (nav + menu) is always available until installed.
+  if (!standalone) showButtons();
+  setMode(isIOS ? "ios" : "generic");
+
+  // Android / desktop Chromium fire this — enables the real one-tap install.
   window.addEventListener("beforeinstallprompt", function (e) {
     e.preventDefault();
     deferredPrompt = e;
-    if (iosSteps) iosSteps.hidden = true; // real install exists — hide the manual steps
+    setMode("prompt");
     if (!standalone) { showButtons(); showBanner(); }
   });
 
-  // True iOS/iPadOS Safari never fires the event and can't install programmatically —
-  // show the manual Add-to-Home-Screen steps only when no native prompt is available.
+  // iOS/iPadOS Safari can't install programmatically — surface the dismissible
+  // Share → Add to Home Screen directions after a moment (unless dismissed).
   if (isIOS && !standalone) {
-    setTimeout(function () {
-      if (!deferredPrompt) { showButtons(); showBanner(); if (iosSteps) iosSteps.hidden = false; }
-    }, 800);
+    setTimeout(function () { if (!deferredPrompt) showBanner(); }, 900);
   }
 
   function triggerInstall() {
     if (deferredPrompt) {
       deferredPrompt.prompt();
       deferredPrompt.userChoice.finally(function () { deferredPrompt = null; hideButtons(); hideBanner(); });
-    } else if (isIOS && iosSteps) {
-      iosSteps.hidden = false;
-      if (banner) { banner.hidden = false; banner.classList.add("install-banner--expanded"); }
+      return;
     }
+    // No native prompt: reveal the banner with the right instructions.
+    if (banner) banner.hidden = false;
+    setMode(isIOS ? "ios" : "generic");
   }
   installBtns.forEach(function (b) { b.addEventListener("click", triggerInstall); });
-
-  var installGo = doc.getElementById("installGo");
   if (installGo) installGo.addEventListener("click", triggerInstall);
+
   var installClose = doc.getElementById("installClose");
   if (installClose) installClose.addEventListener("click", function () {
     hideBanner();
