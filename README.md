@@ -6,12 +6,12 @@ Services front and center: **Headshots · Matterport · Lifestyle Videos · Live
 
 ## The look
 
-The design merges two references the client loves:
-
-- **Elite Living Realty** — bold caps punch, city marquee, high-contrast black/white.
-- **Aterra Builders** — warm editorial serif, cream/stone palette, "built to outlast" luxury.
-
-…into one system: a warm cream/ink palette, `Fraunces` editorial serif + `Inter`, an electric-blue accent for pop, a broadcast-red `LIVE` cue, cinematic grain, and scroll-reveal motion. The portfolio section ("Content That Stops the Scroll") mirrors the reel-grid gallery from the client's marketing site.
+The design merges two reference aesthetics the client loves — a warm editorial
+serif luxury ("built to outlast" energy) and a bold display-caps punch — into
+one system: a warm cream/ink palette, `Fraunces` editorial serif + `Inter`, an
+electric-blue accent for pop, a broadcast-red `LIVE` cue, cinematic grain, and
+scroll-reveal motion. The hero and service cards are photo-driven; the portfolio
+section ("Content That Stops the Scroll") is a reel-grid gallery.
 
 ## Pricing ladder
 
@@ -24,7 +24,7 @@ Built around a deliberate **$995 on-ramp** so newer/budget-conscious agents can 
 | Team | $3,495/mo | Lead + up to 2 agents |
 | Brokerage | $5,495/mo | The Premium Anchor |
 
-Full à-la-carte menu included below the tiers. A light Elite Living Realty band promotes partner pricing for new agents onboarding with ELR.
+Full à-la-carte menu included below the tiers.
 
 ## Structure
 
@@ -50,12 +50,17 @@ Works as-is on **GitHub Pages**, **Netlify**, or **Vercel** (static, no framewor
 
 ## Making it production-ready
 
-Placeholders are intentional and labeled so real media drops straight in:
+The hero and service cards ship with high-quality stock photography (Unsplash
+CDN) so the site looks finished immediately. Every image is a one-line swap for
+your own studio work, and each has a duotone gradient fallback so nothing breaks
+if a photo can't load.
 
-- **Hero** — swap the `.hero__media` gradient for a background video or photo (`data-media` on `<section class="hero">`).
+- **Hero photo** — swap the `url()` in `.hero__media` (`assets/css/styles.css`) for your own film still or listing shot.
+- **Service card photos** — swap the `background-image` `url()` on each `.svc-card__img` in `index.html` (Headshots, Matterport, Lifestyle Videos, Livestream).
 - **Portfolio** — the `.reel-feature` and `.reel-tile` blocks are wired to open the contact form on click; replace with real Vimeo/YouTube/MP4 embeds (see the play-button hook in `main.js`).
 - **Contact form** — currently a demo (client-side confirmation only). Wire the submit handler in `main.js` to your email service or CRM.
 - **Studio image** — replace the `.studio__media` gradient with a real behind-the-lens photo.
+- **Phone** — add a contact number in the contact and form sections when ready.
 
 ---
 

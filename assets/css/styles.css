@@ -1,7 +1,7 @@
 /* =============================================================
    ALL THINGS REELestate — Content Studio
-   Design system: editorial serif (Aterra warmth) x bold caps
-   (Elite Living punch), cream/ink palette, electric accent pop.
+   Design system: editorial serif warmth x bold display caps,
+   cream/ink palette, electric accent pop.
    ============================================================= */
 
 /* ----------  TOKENS  ---------- */
@@ -242,16 +242,17 @@ section { position: relative; }
     radial-gradient(100% 80% at 12% 100%, rgba(198,161,91,.16), transparent 60%),
     linear-gradient(180deg, #17140f 0%, #201b14 40%, #14110d 100%);
 }
-/* Cinematic "film still" placeholder — swap for real hero video/photo */
+/* Hero photo — swap the url() below for your own film still / listing shot.
+   The radial gradient after it is the fallback if the photo can't load. */
 .hero__media {
   position: absolute; inset: 0; z-index: 0;
   background-size: cover; background-position: center;
-  opacity: .5;
+  opacity: 1;
   background-image:
-    linear-gradient(115deg, rgba(20,16,12,.2), rgba(20,16,12,.7)),
-    repeating-linear-gradient(100deg, rgba(255,255,255,.03) 0 2px, transparent 2px 5px),
+    linear-gradient(108deg, rgba(13,10,7,.52) 0%, rgba(13,10,7,.22) 44%, rgba(13,10,7,.5) 100%),
+    url("https://assets.cdn.filesafe.space/UryrOQKz7XrlpqiWvJGM/media/6a50aa03708c41d4df6b177e.png"),
     radial-gradient(60% 70% at 70% 30%, #4a4335, #211c15 70%);
-  filter: saturate(.9) contrast(1.05);
+  filter: saturate(1.02) contrast(1.03);
 }
 .hero__vignette { position: absolute; inset: 0; z-index: 1; background: linear-gradient(180deg, rgba(15,12,9,.55) 0%, transparent 22%, transparent 45%, rgba(13,10,7,.82) 100%); }
 .hero .wrap { position: relative; z-index: 3; width: 100%; padding-bottom: clamp(90px, 12vh, 130px); padding-top: 140px; }
@@ -330,32 +331,46 @@ section { position: relative; }
 .svc-primary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
 .svc-card {
   position: relative;
-  background: var(--paper-2);
-  border: 1px solid var(--hair);
-  border-radius: var(--radius);
-  padding: 30px 26px 26px;
-  min-height: 340px;
-  display: flex; flex-direction: column;
+  border-radius: 8px;
+  min-height: 440px;
+  display: flex; flex-direction: column; justify-content: flex-end;
+  padding: 28px 26px;
   overflow: hidden;
-  transition: transform .6s var(--ease), background .5s var(--ease), color .5s var(--ease), border-color .5s;
+  color: var(--paper);
+  isolation: isolate;
+  border: 1px solid var(--hair);
+  transition: transform .6s var(--ease), box-shadow .6s var(--ease);
 }
+.svc-card:hover { transform: translateY(-8px); box-shadow: 0 42px 70px -34px rgba(20,16,12,.6); }
+/* Photo layer — swap the url per card in index.html (background-image).
+   The duotone gradient after it is the fallback if the photo can't load. */
+.svc-card__img {
+  position: absolute; inset: 0; z-index: -2;
+  background-color: #191410; /* dark base shows if a photo is slow / fails */
+  background-size: cover; background-position: center;
+  transition: transform 1.2s var(--ease);
+}
+.svc-card:hover .svc-card__img { transform: scale(1.07); }
+/* Legibility gradient */
+.svc-card::before {
+  content: ""; position: absolute; inset: 0; z-index: -1;
+  background: linear-gradient(180deg, rgba(15,12,9,.12) 0%, rgba(15,12,9,.34) 44%, rgba(11,9,6,.92) 100%);
+}
+/* Accent underline on hover */
 .svc-card::after {
-  content: ""; position: absolute; inset: 0; z-index: 0; opacity: 0;
-  background: radial-gradient(120% 80% at 50% 0%, rgba(47,91,255,.35), transparent 60%);
-  transition: opacity .6s var(--ease);
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 3px; z-index: 0;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  transform: scaleX(0); transform-origin: left; transition: transform .6s var(--ease);
 }
-.svc-card:hover { transform: translateY(-6px); background: var(--ink); color: var(--paper); border-color: var(--ink); }
-.svc-card:hover::after { opacity: 1; }
-.svc-card:hover .svc-card__num { color: var(--accent-2); }
-.svc-card:hover .svc-card__desc { color: var(--cream-dim); }
-.svc-card > * { position: relative; z-index: 1; }
-.svc-card__num { font-family: var(--serif); font-size: 15px; font-style: italic; color: var(--stone); transition: color .4s; }
-.svc-card__icon { margin-top: 20px; margin-bottom: auto; }
-.svc-card__icon svg { width: 40px; height: 40px; stroke: currentColor; stroke-width: 1.2; fill: none; }
-.svc-card h3 { font-family: var(--serif); font-size: 27px; font-weight: 400; margin-top: 24px; }
-.svc-card__desc { margin-top: 10px; font-size: 14px; color: var(--stone-2); transition: color .4s; }
-.svc-card__live { position: absolute; top: 26px; right: 24px; z-index: 1; display: inline-flex; align-items: center; gap: 7px; font-size: 10px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; color: var(--live); }
-.svc-card__live .pulse { width: 7px; height: 7px; border-radius: 50%; background: var(--live); box-shadow: 0 0 0 0 rgba(255,59,48,.6); animation: pulse 1.8s infinite; }
+.svc-card:hover::after { transform: scaleX(1); }
+.svc-card > *:not(.svc-card__img) { position: relative; z-index: 1; }
+.svc-card__num { display: block; font-family: var(--serif); font-size: 14px; font-style: italic; color: var(--cream-dim); margin-bottom: 8px; }
+.svc-card__icon { position: absolute; top: 24px; left: 26px; z-index: 1; }
+.svc-card__icon svg { width: 30px; height: 30px; stroke: var(--paper); stroke-width: 1.3; fill: none; opacity: .92; }
+.svc-card h3 { font-family: var(--serif); font-size: 28px; font-weight: 400; }
+.svc-card__desc { margin-top: 10px; font-size: 14px; color: var(--cream-dim); }
+.svc-card__live { position: absolute; top: 22px; right: 22px; z-index: 2; display: inline-flex; align-items: center; gap: 7px; font-size: 10px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: #fff; background: rgba(255,59,48,.92); padding: 7px 12px; border-radius: 100px; }
+.svc-card__live .pulse { width: 7px; height: 7px; border-radius: 50%; background: #fff; box-shadow: 0 0 0 0 rgba(255,255,255,.7); animation: pulse 1.8s infinite; }
 @keyframes pulse { 0%{ box-shadow: 0 0 0 0 rgba(255,59,48,.55) } 70%{ box-shadow: 0 0 0 10px rgba(255,59,48,0) } 100%{ box-shadow: 0 0 0 0 rgba(255,59,48,0) } }
 
 .svc-secondary { margin-top: 18px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--hair); border: 1px solid var(--hair); border-radius: var(--radius); overflow: hidden; }
@@ -546,18 +561,6 @@ section { position: relative; }
 .studio__tags { margin-top: 26px; display: flex; flex-wrap: wrap; gap: 10px; }
 .studio__tags span { font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--stone-2); border: 1px solid var(--hair); padding: 9px 16px; border-radius: 100px; }
 @media (max-width: 860px){ .studio__grid { grid-template-columns: 1fr; } }
-
-/* =============================================================
-   ELR ONBOARDING BAND (kept light)
-   ============================================================= */
-.elr { background: linear-gradient(120deg, #17140f, #211b13); color: var(--paper); position: relative; overflow: hidden; }
-.elr::before { content: ""; position: absolute; inset: 0; background: radial-gradient(80% 120% at 90% 10%, rgba(47,91,255,.16), transparent 55%); }
-.elr__grid { position: relative; display: grid; grid-template-columns: 1fr auto; gap: 36px; align-items: center; }
-.elr__k { font-size: 11px; letter-spacing: .24em; text-transform: uppercase; color: var(--gold); }
-.elr h2 { font-family: var(--serif); font-weight: 300; font-size: clamp(26px, 3.4vw, 44px); line-height: 1.08; margin-top: 14px; max-width: 22ch; }
-.elr h2 em { font-style: italic; }
-.elr p { margin-top: 14px; color: var(--cream-dim); font-size: 15px; max-width: 50ch; }
-@media (max-width: 780px){ .elr__grid { grid-template-columns: 1fr; } }
 
 /* =============================================================
    CONTACT
