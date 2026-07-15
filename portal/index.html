@@ -32,6 +32,24 @@
           <input id="email" type="email" autocomplete="email" placeholder="you@email.com" />
         </div>
         <button class="btn btn--accent" id="sendBtn" style="width:100%">Send login code</button>
+        <p class="login-foot"><a href="#" id="toPassword">Sign in with a password instead</a></p>
+      </div>
+
+      <!-- Password sign-in -->
+      <div id="stepPassword" class="hide">
+        <h1 class="serif">Sign in with a <em>password</em></h1>
+        <p class="sub">Enter your email and password.</p>
+        <div id="msgPw"></div>
+        <div class="field">
+          <label for="pwEmail">Email</label>
+          <input id="pwEmail" type="email" autocomplete="email" placeholder="you@email.com" />
+        </div>
+        <div class="field">
+          <label for="pwPass">Password</label>
+          <input id="pwPass" type="password" autocomplete="current-password" placeholder="Your password" />
+        </div>
+        <button class="btn btn--accent" id="pwBtn" style="width:100%">Sign in</button>
+        <p class="login-foot"><a href="#" id="toCode">Use a one-time email code instead</a></p>
       </div>
 
       <!-- Step 2: code -->
@@ -94,6 +112,20 @@
     $("code").addEventListener("keydown", (e) => { if (e.key === "Enter") $("verifyBtn").click(); });
     $("email").addEventListener("keydown", (e) => { if (e.key === "Enter") $("sendBtn").click(); });
     $("restart").addEventListener("click", (e) => { e.preventDefault(); show($("stepCode"), false); show($("stepEmail"), true); });
+
+    // Password sign-in
+    $("toPassword").addEventListener("click", (e) => { e.preventDefault(); show($("stepEmail"), false); show($("stepPassword"), true); $("pwEmail").focus(); });
+    $("toCode").addEventListener("click", (e) => { e.preventDefault(); show($("stepPassword"), false); show($("stepEmail"), true); });
+    $("pwBtn").addEventListener("click", async () => {
+      const pe = $("pwEmail").value.trim().toLowerCase();
+      const pp = $("pwPass").value;
+      if (!pe.includes("@") || !pp) return flash($("msgPw"), "Enter your email and password.", "err");
+      $("pwBtn").disabled = true; $("pwBtn").textContent = "Signing in…";
+      const { error } = await sb.auth.signInWithPassword({ email: pe, password: pp });
+      if (error) { $("pwBtn").disabled = false; $("pwBtn").textContent = "Sign in"; return flash($("msgPw"), error.message, "err"); }
+      location.replace("app.html");
+    });
+    $("pwPass").addEventListener("keydown", (e) => { if (e.key === "Enter") $("pwBtn").click(); });
   </script>
 </body>
 </html>

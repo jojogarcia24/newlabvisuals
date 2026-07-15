@@ -60,9 +60,20 @@ function renderTopbar() {
     <span class="pill ${me.role === "admin" ? "pill--admin" : ""}">${me.role}</span>
     <span class="who">${esc(me.email || "")}</span>
     <button class="btn btn--ghost btn--sm" id="notifyBtn">Enable alerts</button>
+    <button class="btn btn--ghost btn--sm" id="changePw">Password</button>
     <button class="btn btn--ghost btn--sm" id="signOut">Sign out</button>`;
   document.getElementById("signOut").onclick = async () => { await sb.auth.signOut(); location.replace("index.html"); };
   document.getElementById("notifyBtn").onclick = enablePush;
+  document.getElementById("changePw").onclick = () => modal("Change password", `
+    <div class="field"><label>New password</label><input id="np" type="password" autocomplete="new-password" placeholder="At least 8 characters" /></div>
+    <p class="muted" style="font-size:13px">Sets the password you use to sign in.</p>
+  `, async (b) => {
+    const np = b.querySelector("#np").value;
+    if (np.length < 8) { toast("Use at least 8 characters", true); return false; }
+    const { error } = await sb.auth.updateUser({ password: np });
+    if (error) { toast(error.message, true); return false; }
+    toast("Password updated");
+  }, "Update");
   refreshNotifyBtn();
 }
 

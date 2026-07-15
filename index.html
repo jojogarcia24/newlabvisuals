@@ -39,6 +39,7 @@
       </a>
       <nav class="nav__links" aria-label="Primary">
         <a href="#work">Work</a>
+        <a href="#tours">3D Tours</a>
         <a href="#services">Services</a>
         <a href="#pricing">Pricing</a>
         <a href="#process">Process</a>
@@ -58,11 +59,12 @@
   <!-- Mobile menu -->
   <div class="mobile-menu" id="mobileMenu">
     <a href="#work"><span class="num">01</span>Work</a>
-    <a href="#services"><span class="num">02</span>Services</a>
-    <a href="#pricing"><span class="num">03</span>Pricing</a>
-    <a href="#process"><span class="num">04</span>Process</a>
-    <a href="#studio"><span class="num">05</span>Studio</a>
-    <a href="portal/index.html"><span class="num">06</span>Sign In</a>
+    <a href="#tours"><span class="num">02</span>3D Tours</a>
+    <a href="#services"><span class="num">03</span>Services</a>
+    <a href="#pricing"><span class="num">04</span>Pricing</a>
+    <a href="#process"><span class="num">05</span>Process</a>
+    <a href="#studio"><span class="num">06</span>Studio</a>
+    <a href="portal/index.html"><span class="num">07</span>Sign In</a>
     <button class="btn btn--ghost-light" id="installBtnMenu" hidden style="margin-top:22px;align-self:flex-start">Install App</button>
     <a class="btn btn--accent" href="#contact">Start a Conversation</a>
   </div>
@@ -91,7 +93,7 @@
   <!-- ==================== HERO ==================== -->
   <section class="hero grain" data-media>
     <div class="hero__bg"></div>
-    <video class="hero__video" id="heroVideo" autoplay muted loop playsinline preload="auto" aria-hidden="true">
+    <video class="hero__video" id="heroVideo" autoplay muted loop playsinline webkit-playsinline preload="auto" aria-hidden="true">
       <source src="https://assets.cdn.filesafe.space/UryrOQKz7XrlpqiWvJGM/media/6a580f0f69e78090a2c173b6.mp4" type="video/mp4" />
     </video>
     <div class="hero__scrim" aria-hidden="true"></div>
@@ -267,6 +269,54 @@
       </div>
     </div>
   </section>
+
+  <!-- ==================== 3D MATTERPORT TOURS ==================== -->
+  <section class="tours section-pad" id="tours">
+    <div class="wrap">
+      <div class="sec-head sec-head--split reveal">
+        <div>
+          <p class="eyebrow">Immersive 3D</p>
+          <h2>Step inside, <em>in 3D.</em></h2>
+        </div>
+        <p>Full Matterport walkthroughs — buyers move room to room and feel the home before they ever pull up to the curb. Tap a tour to explore.</p>
+      </div>
+
+      <div class="tours-grid" id="toursGrid">
+        <button class="tour-card d1 reveal" data-mp="5epvd6Qfpyj">
+          <span class="tour-card__badge"><span class="tour-card__dot"></span>3D Tour</span>
+          <span class="tour-card__ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 2l9 5v10l-9 5-9-5V7z"/><path d="M12 2v20M3 7l9 5 9-5"/></svg></span>
+          <span class="tour-card__body"><span class="tour-card__k">Matterport · Dollhouse + Walkthrough</span><span class="tour-card__t">Immersive Tour 01</span></span>
+          <span class="tour-card__cta">Explore in 3D <span class="arrow">→</span></span>
+        </button>
+        <button class="tour-card d3 reveal" data-d="1" data-mp="ky2Q14FXDyy">
+          <span class="tour-card__badge"><span class="tour-card__dot"></span>3D Tour</span>
+          <span class="tour-card__ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 2l9 5v10l-9 5-9-5V7z"/><path d="M12 2v20M3 7l9 5 9-5"/></svg></span>
+          <span class="tour-card__body"><span class="tour-card__k">Matterport · Dollhouse + Walkthrough</span><span class="tour-card__t">Immersive Tour 02</span></span>
+          <span class="tour-card__cta">Explore in 3D <span class="arrow">→</span></span>
+        </button>
+        <button class="tour-card d5 reveal" data-d="2" data-mp="VEGE3VgHjcE">
+          <span class="tour-card__badge"><span class="tour-card__dot"></span>3D Tour</span>
+          <span class="tour-card__ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 2l9 5v10l-9 5-9-5V7z"/><path d="M12 2v20M3 7l9 5 9-5"/></svg></span>
+          <span class="tour-card__body"><span class="tour-card__k">Matterport · Dollhouse + Walkthrough</span><span class="tour-card__t">Immersive Tour 03</span></span>
+          <span class="tour-card__cta">Explore in 3D <span class="arrow">→</span></span>
+        </button>
+        <button class="tour-card d6 reveal" data-d="3" data-mp="YggUQ6Hzsjx">
+          <span class="tour-card__badge"><span class="tour-card__dot"></span>3D Tour</span>
+          <span class="tour-card__ico" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 2l9 5v10l-9 5-9-5V7z"/><path d="M12 2v20M3 7l9 5 9-5"/></svg></span>
+          <span class="tour-card__body"><span class="tour-card__k">Matterport · Dollhouse + Walkthrough</span><span class="tour-card__t">Immersive Tour 04</span></span>
+          <span class="tour-card__cta">Explore in 3D <span class="arrow">→</span></span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Matterport lightbox -->
+  <div class="mp-lightbox" id="mpLightbox" hidden>
+    <button class="mp-lightbox__close" id="mpClose" aria-label="Close tour">&times;</button>
+    <div class="mp-lightbox__frame">
+      <iframe id="mpFrame" title="Matterport 3D tour" allow="fullscreen; xr-spatial-tracking; gyroscope; accelerometer" allowfullscreen loading="lazy"></iframe>
+    </div>
+  </div>
 
   <!-- ==================== WHY ==================== -->
   <section class="why section-pad">

@@ -13,14 +13,28 @@
     var reveal = function () { heroVideo.classList.add("ready"); };
     heroVideo.addEventListener("loadeddata", reveal);
     heroVideo.addEventListener("playing", reveal);
+    // Always mute (required for autoplay on mobile) and play inline.
+    heroVideo.muted = true;
+    heroVideo.setAttribute("muted", "");
+    heroVideo.playsInline = true;
     if (reduceMotion) {
       heroVideo.removeAttribute("autoplay");
       heroVideo.addEventListener("loadeddata", function () { try { heroVideo.pause(); } catch (e) {} });
     } else {
-      var tryPlay = function () { var p = heroVideo.play(); if (p && p.catch) p.catch(function () {}); };
+      var tryPlay = function () {
+        heroVideo.muted = true;
+        var p = heroVideo.play();
+        if (p && p.catch) p.catch(function () {});
+      };
+      ["loadedmetadata", "canplay", "canplaythrough"].forEach(function (ev) { heroVideo.addEventListener(ev, tryPlay); });
       if (heroVideo.readyState >= 2) { tryPlay(); reveal(); }
-      heroVideo.addEventListener("canplay", tryPlay);
-      heroVideo.addEventListener("loadedmetadata", tryPlay);
+      // Fallback for iOS Low Power Mode / blocked autoplay: start on the first interaction.
+      var kick = function () { tryPlay(); };
+      ["touchstart", "pointerdown", "click", "scroll"].forEach(function (ev) {
+        window.addEventListener(ev, kick, { once: true, passive: true });
+      });
+      // Resume when returning to the tab.
+      doc.addEventListener("visibilitychange", function () { if (!doc.hidden) tryPlay(); });
     }
   }
 
@@ -97,6 +111,29 @@
       if (contact) contact.scrollIntoView({ behavior: "smooth" });
     });
   });
+
+  /* ---------- Matterport 3D tour lightbox ---------- */
+  var mpLightbox = doc.getElementById("mpLightbox");
+  var mpFrame = doc.getElementById("mpFrame");
+  if (mpLightbox && mpFrame) {
+    var openMp = function (id) {
+      mpFrame.src = "https://my.matterport.com/show/?m=" + id + "&play=1";
+      mpLightbox.hidden = false;
+      doc.body.style.overflow = "hidden";
+    };
+    var closeMp = function () {
+      mpLightbox.hidden = true;
+      mpFrame.src = "";
+      doc.body.style.overflow = "";
+    };
+    doc.querySelectorAll("[data-mp]").forEach(function (el) {
+      el.addEventListener("click", function () { openMp(el.getAttribute("data-mp")); });
+    });
+    var mpClose = doc.getElementById("mpClose");
+    if (mpClose) mpClose.addEventListener("click", closeMp);
+    mpLightbox.addEventListener("click", function (e) { if (e.target === mpLightbox) closeMp(); });
+    window.addEventListener("keydown", function (e) { if (e.key === "Escape") closeMp(); });
+  }
 
   /* ---------- Contact form (demo) ---------- */
   var form = doc.getElementById("contactForm");
