@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Portal — All Things REELestate</title>
+  <meta name="theme-color" content="#141210" />
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="../assets/icons/apple-touch-icon.png" />
+  <link rel="manifest" href="../manifest.webmanifest" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="portal.css" />
+  <script src="../assets/js/config.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="../index.html" aria-label="Home">
+      <span class="brand__top">All Things</span>
+      <span class="brand__main"><span class="brand__reel">REEL</span><b>estate</b></span>
+    </a>
+    <div class="topbar__right" id="topRight">
+      <div class="spinner" style="width:18px;height:18px;margin:0"></div>
+    </div>
+  </header>
+
+  <main class="wrap" id="app">
+    <div class="spinner"></div>
+  </main>
+
+  <div id="modalRoot"></div>
+  <div class="toast" id="toast"></div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

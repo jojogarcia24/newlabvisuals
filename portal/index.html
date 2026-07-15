@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sign In — All Things REELestate</title>
+  <meta name="theme-color" content="#141210" />
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="../assets/icons/apple-touch-icon.png" />
+  <link rel="manifest" href="../manifest.webmanifest" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="portal.css" />
+  <script src="../assets/js/config.js"></script>
+</head>
+<body>
+  <div class="login-wrap">
+    <div class="login-card">
+      <a class="brand" href="../index.html" aria-label="Home">
+        <span class="brand__top">All Things</span>
+        <span class="brand__main"><span class="brand__reel">REEL</span><b>estate</b></span>
+      </a>
+
+      <!-- Step 1: email -->
+      <div id="stepEmail">
+        <h1 class="serif">Client &amp; Studio <em>Portal</em></h1>
+        <p class="sub">Enter your email and we'll send you a one-time login code — no password needed.</p>
+        <div id="msg1"></div>
+        <div class="field">
+          <label for="email">Email</label>
+          <input id="email" type="email" autocomplete="email" placeholder="you@email.com" />
+        </div>
+        <button class="btn btn--accent" id="sendBtn" style="width:100%">Send login code</button>
+      </div>
+
+      <!-- Step 2: code -->
+      <div id="stepCode" class="hide">
+        <h1 class="serif">Check your <em>inbox</em></h1>
+        <p class="sub">We sent a 6-digit code to <b id="sentTo"></b>. Enter it below.</p>
+        <div id="msg2"></div>
+        <div class="field">
+          <label for="code">Login code</label>
+          <input id="code" type="text" inputmode="numeric" autocomplete="one-time-code" placeholder="123456" maxlength="6" />
+        </div>
+        <button class="btn btn--accent" id="verifyBtn" style="width:100%">Verify &amp; enter</button>
+        <p class="login-foot"><a href="#" id="restart">Use a different email</a></p>
+      </div>
+
+      <p class="login-foot">Studio access is for New Lab Visuals · Donnie Word II</p>
+    </div>
+  </div>
+
+  <script type="module">
+    import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+    const cfg = window.ATR_CONFIG;
+    const sb = createClient(cfg.SUPABASE_URL, cfg.SUPABASE_KEY);
+
+    const $ = (id) => document.getElementById(id);
+    const show = (el, on) => el.classList.toggle("hide", !on);
+    const flash = (el, text, kind) => { el.innerHTML = text ? `<div class="msg msg--${kind}">${text}</div>` : ""; };
+
+    // Already signed in? Go to the app.
+    (async () => {
+      const { data } = await sb.auth.getSession();
+      if (data.session) location.replace("app.html");
+    })();
+
+    let email = "";
+    $("sendBtn").addEventListener("click", async () => {
+      email = $("email").value.trim().toLowerCase();
+      if (!email || !email.includes("@")) return flash($("msg1"), "Please enter a valid email.", "err");
+      $("sendBtn").disabled = true; $("sendBtn").textContent = "Sending…";
+      const { error } = await sb.auth.signInWithOtp({ email, options: { shouldCreateUser: true } });
+      $("sendBtn").disabled = false; $("sendBtn").textContent = "Send login code";
+      if (error) return flash($("msg1"), error.message, "err");
+      $("sentTo").textContent = email;
+      show($("stepEmail"), false); show($("stepCode"), true);
+      $("code").focus();
+    });
+
+    $("verifyBtn").addEventListener("click", async () => {
+      const token = $("code").value.trim();
+      if (token.length < 6) return flash($("msg2"), "Enter the 6-digit code.", "err");
+      $("verifyBtn").disabled = true; $("verifyBtn").textContent = "Verifying…";
+      const { error } = await sb.auth.verifyOtp({ email, token, type: "email" });
+      if (error) {
+        $("verifyBtn").disabled = false; $("verifyBtn").textContent = "Verify & enter";
+        return flash($("msg2"), error.message, "err");
+      }
+      location.replace("app.html");
+    });
+
+    $("code").addEventListener("keydown", (e) => { if (e.key === "Enter") $("verifyBtn").click(); });
+    $("email").addEventListener("keydown", (e) => { if (e.key === "Enter") $("sendBtn").click(); });
+    $("restart").addEventListener("click", (e) => { e.preventDefault(); show($("stepCode"), false); show($("stepEmail"), true); });
+  </script>
+</body>
+</html>

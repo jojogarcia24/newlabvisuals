@@ -13,6 +13,13 @@
   <meta property="og:type" content="website" />
 
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="REELestate" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <script src="assets/js/config.js"></script>
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -38,7 +45,8 @@
         <a href="#studio">Studio</a>
       </nav>
       <div class="nav__cta">
-        <a class="btn btn--ghost-light" href="#work">See the Work</a>
+        <button class="btn btn--ghost-light hide-installed" id="installBtn" hidden>Install App</button>
+        <a class="btn btn--ghost-light" href="portal/index.html">Sign In</a>
         <a class="btn btn--accent" href="#contact">Start a Conversation</a>
         <button class="burger" id="burger" aria-label="Menu" aria-expanded="false">
           <span></span><span></span><span></span>
@@ -54,6 +62,7 @@
     <a href="#pricing"><span class="num">03</span>Pricing</a>
     <a href="#process"><span class="num">04</span>Process</a>
     <a href="#studio"><span class="num">05</span>Studio</a>
+    <a href="portal/index.html"><span class="num">06</span>Sign In</a>
     <a class="btn btn--accent" href="#contact">Start a Conversation</a>
   </div>
 
@@ -183,12 +192,12 @@
         <p style="margin-inline:auto">See what we've done for our clients — real estate content built to move listings and make agents unforgettable.</p>
       </div>
 
-      <div class="reel-feature reveal" data-video>
+      <div class="reel-feature reveal" data-video id="reelFeature">
         <span class="reel-feature__tag">Featured Film</span>
         <button class="play"><span class="play__disc"><svg viewBox="0 0 24 24"><path d="M6 4l14 8-14 8z"/></svg></span>Start watching</button>
         <div class="reel-feature__meta">
-          <div class="k">Lifestyle Film · Dallas</div>
-          <div class="t">Built to be handed down.</div>
+          <div class="k" id="reelFeatureLoc">Lifestyle Film · Dallas</div>
+          <div class="t" id="reelFeatureTitle">Built to be handed down.</div>
         </div>
       </div>
 
@@ -197,7 +206,7 @@
         <span class="toggle"><span class="toggle__track"></span>Autoplay next</span>
       </div>
 
-      <div class="reel-grid">
+      <div class="reel-grid" id="reelGrid">
         <button class="reel-tile d1 reveal">
           <span class="reel-tile__glow"></span>
           <span class="reel-tile__ico"><svg viewBox="0 0 24 24"><path d="M6 4l14 8-14 8z"/></svg></span>
@@ -531,5 +540,39 @@
   </footer>
 
   <script src="assets/js/main.js"></script>
+
+  <!-- Live portfolio from Supabase (admin-managed). Falls back to static tiles on any error. -->
+  <script type="module">
+    import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+    const cfg = window.ATR_CONFIG;
+    if (cfg && cfg.SUPABASE_URL) {
+      const sb = createClient(cfg.SUPABASE_URL, cfg.SUPABASE_KEY);
+      try {
+        const { data: items } = await sb.from("portfolio_items").select("*").eq("published", true).order("sort_order");
+        if (items && items.length) {
+          const duo = ["d1", "d2", "d3", "d4", "d5", "d6"];
+          const feat = items.find((i) => i.featured) || items[0];
+          const rest = items.filter((i) => i.id !== feat.id);
+          document.getElementById("reelFeatureLoc").textContent = feat.location || "Featured Film";
+          document.getElementById("reelFeatureTitle").textContent = feat.title;
+          const featEl = document.getElementById("reelFeature");
+          if (feat.media_url) featEl.dataset.url = feat.media_url;
+          if (feat.thumb_url) featEl.style.backgroundImage = `linear-gradient(180deg,rgba(20,16,12,.1),rgba(20,16,12,.75)),url('${feat.thumb_url}')`;
+          const playIco = `<svg viewBox="0 0 24 24"><path d="M6 4l14 8-14 8z"/></svg>`;
+          const grid = document.getElementById("reelGrid");
+          grid.innerHTML = rest.map((it, i) => `
+            <button class="reel-tile ${duo[i % duo.length]}" ${it.media_url ? `data-url="${it.media_url}"` : ""} ${it.thumb_url ? `style="background-image:url('${it.thumb_url}');background-size:cover"` : ""}>
+              <span class="reel-tile__glow"></span>
+              <span class="reel-tile__ico">${playIco}</span>
+              <span class="reel-tile__body"><span class="reel-tile__k">${it.location || ""}</span><span class="reel-tile__t">${it.title}</span></span>
+            </button>`).join("");
+          const openTile = (el) => { const u = el.dataset.url; if (u) window.open(u, "_blank", "noopener"); else document.getElementById("contact").scrollIntoView({ behavior: "smooth" }); };
+          featEl.addEventListener("click", () => openTile(featEl));
+          grid.querySelectorAll(".reel-tile").forEach((el) => el.addEventListener("click", () => openTile(el)));
+          grid.querySelectorAll(".reel-tile").forEach((el) => el.classList.add("in"));
+        }
+      } catch (e) { /* keep static fallback */ }
+    }
+  </script>
 </body>
 </html>
