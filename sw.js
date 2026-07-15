@@ -1,6 +1,6 @@
 /* All Things REELestate — service worker
    Handles offline app-shell caching, web-push notifications, and click routing. */
-const VERSION = "atr-v1";
+const VERSION = "atr-v2";
 const SHELL = [
   "index.html",
   "assets/css/styles.css",
@@ -32,25 +32,20 @@ self.addEventListener("fetch", (event) => {
   // Only handle same-origin GETs; let Supabase / fonts / CDNs pass straight through.
   if (url.origin !== self.location.origin) return;
 
-  if (req.mode === "navigate") {
-    event.respondWith(
-      fetch(req).catch(() => caches.match(req).then((r) => r || caches.match("index.html"))),
-    );
-    return;
-  }
+  // Network-first: always fetch fresh when online (so updates apply immediately),
+  // fall back to cache only when offline.
   event.respondWith(
-    caches.match(req).then((cached) => {
-      const network = fetch(req)
-        .then((res) => {
-          if (res && res.status === 200) {
-            const copy = res.clone();
-            caches.open(VERSION).then((c) => c.put(req, copy));
-          }
-          return res;
-        })
-        .catch(() => cached);
-      return cached || network;
-    }),
+    fetch(req)
+      .then((res) => {
+        if (res && res.status === 200) {
+          const copy = res.clone();
+          caches.open(VERSION).then((c) => c.put(req, copy));
+        }
+        return res;
+      })
+      .catch(() =>
+        caches.match(req).then((r) => r || (req.mode === "navigate" ? caches.match("index.html") : undefined)),
+      ),
   );
 });
 

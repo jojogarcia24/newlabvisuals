@@ -637,11 +637,12 @@ section { position: relative; }
   color: var(--paper); border: 1px solid var(--hair-light); cursor: pointer;
   transition: transform .5s var(--ease), box-shadow .5s var(--ease);
 }
+.tour-card__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; }
 .tour-card::before {
-  content: ""; position: absolute; inset: 0; z-index: 0;
-  background: linear-gradient(160deg, rgba(47,91,255,.20), transparent 55%), linear-gradient(180deg, rgba(20,16,12,.1), rgba(11,9,6,.86));
+  content: ""; position: absolute; inset: 0; z-index: 1;
+  background: linear-gradient(160deg, rgba(47,91,255,.20), transparent 55%), linear-gradient(180deg, rgba(20,16,12,.05), rgba(11,9,6,.86));
 }
-.tour-card > * { position: relative; z-index: 1; }
+.tour-card > *:not(.tour-card__img) { position: relative; z-index: 2; }
 .tour-card:hover { transform: translateY(-6px); box-shadow: 0 40px 70px -34px rgba(0,0,0,.6); }
 .tour-card__badge { position: absolute; top: 20px; left: 20px; display: inline-flex; align-items: center; gap: 7px; font-size: 10px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; background: rgba(20,16,12,.55); border: 1px solid var(--hair-light); padding: 7px 12px; border-radius: 100px; }
 .tour-card__dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent-2); box-shadow: 0 0 0 0 rgba(109,139,255,.6); animation: pulse 1.8s infinite; }
@@ -683,7 +684,7 @@ section { position: relative; }
 .ios-steps b{ color:var(--accent-2); }
 .ios-share{ width:16px; height:16px; stroke:var(--accent-2); color:var(--accent-2); vertical-align:middle; }
 .install-banner__act{ display:flex; align-items:center; gap:8px; flex-shrink:0; }
-.install-banner__close{ width:30px; height:30px; border-radius:50%; color:var(--cream-dim); font-size:18px; line-height:1; display:grid; place-items:center; }
+.install-banner__close{ flex-shrink:0; width:42px; height:42px; border-radius:50%; color:var(--cream-dim); font-size:22px; line-height:1; display:grid; place-items:center; border:1px solid var(--hair-light); }
 .install-banner__close:hover{ background:var(--ink-2); color:var(--paper); }
 .install-banner--expanded{ align-items:flex-start; }
 @media (max-width:520px){

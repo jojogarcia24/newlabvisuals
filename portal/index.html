@@ -77,6 +77,11 @@
     const $ = (id) => document.getElementById(id);
     const show = (el, on) => el.classList.toggle("hide", !on);
     const flash = (el, text, kind) => { el.innerHTML = text ? `<div class="msg msg--${kind}">${text}</div>` : ""; };
+    const errText = (e) => {
+      if (!e) return "Something went wrong. Please try again.";
+      console.error("Auth error:", e);
+      return e.message || e.error_description || e.msg || (e.status ? `Error ${e.status}` : "") || "Something went wrong. Please try again.";
+    };
 
     // Already signed in? Go to the app.
     (async () => {
@@ -91,7 +96,7 @@
       $("sendBtn").disabled = true; $("sendBtn").textContent = "Sending…";
       const { error } = await sb.auth.signInWithOtp({ email, options: { shouldCreateUser: true } });
       $("sendBtn").disabled = false; $("sendBtn").textContent = "Send login code";
-      if (error) return flash($("msg1"), error.message, "err");
+      if (error) return flash($("msg1"), errText(error), "err");
       $("sentTo").textContent = email;
       show($("stepEmail"), false); show($("stepCode"), true);
       $("code").focus();
@@ -104,7 +109,7 @@
       const { error } = await sb.auth.verifyOtp({ email, token, type: "email" });
       if (error) {
         $("verifyBtn").disabled = false; $("verifyBtn").textContent = "Verify & enter";
-        return flash($("msg2"), error.message, "err");
+        return flash($("msg2"), errText(error), "err");
       }
       location.replace("app.html");
     });
@@ -122,7 +127,7 @@
       if (!pe.includes("@") || !pp) return flash($("msgPw"), "Enter your email and password.", "err");
       $("pwBtn").disabled = true; $("pwBtn").textContent = "Signing in…";
       const { error } = await sb.auth.signInWithPassword({ email: pe, password: pp });
-      if (error) { $("pwBtn").disabled = false; $("pwBtn").textContent = "Sign in"; return flash($("msgPw"), error.message, "err"); }
+      if (error) { $("pwBtn").disabled = false; $("pwBtn").textContent = "Sign in"; return flash($("msgPw"), errText(error), "err"); }
       location.replace("app.html");
     });
     $("pwPass").addEventListener("keydown", (e) => { if (e.key === "Enter") $("pwBtn").click(); });
