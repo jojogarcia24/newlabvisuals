@@ -10,14 +10,17 @@
   var heroVideo = doc.getElementById("heroVideo");
   if (heroVideo) {
     var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var reveal = function () { heroVideo.classList.add("ready"); };
+    heroVideo.addEventListener("loadeddata", reveal);
+    heroVideo.addEventListener("playing", reveal);
     if (reduceMotion) {
-      try { heroVideo.pause(); } catch (e) {}
       heroVideo.removeAttribute("autoplay");
+      heroVideo.addEventListener("loadeddata", function () { try { heroVideo.pause(); } catch (e) {} });
     } else {
-      heroVideo.addEventListener("playing", function () { heroVideo.classList.add("ready"); });
       var tryPlay = function () { var p = heroVideo.play(); if (p && p.catch) p.catch(function () {}); };
-      if (heroVideo.readyState >= 2) tryPlay();
+      if (heroVideo.readyState >= 2) { tryPlay(); reveal(); }
       heroVideo.addEventListener("canplay", tryPlay);
+      heroVideo.addEventListener("loadedmetadata", tryPlay);
     }
   }
 
@@ -134,15 +137,21 @@
   function showBanner() { if (banner && !dismissed()) banner.hidden = false; }
   function hideBanner() { if (banner) banner.hidden = true; }
 
-  // Android / desktop Chromium: native prompt available.
+  // Android / desktop Chromium: native one-click prompt available.
   window.addEventListener("beforeinstallprompt", function (e) {
     e.preventDefault();
     deferredPrompt = e;
+    if (iosSteps) iosSteps.hidden = true; // real install exists — hide the manual steps
     if (!standalone) { showButtons(); showBanner(); }
   });
 
-  // iOS Safari never fires the event — offer manual Add-to-Home-Screen.
-  if (isIOS && !standalone) { showButtons(); showBanner(); if (iosSteps) iosSteps.hidden = false; }
+  // True iOS/iPadOS Safari never fires the event and can't install programmatically —
+  // show the manual Add-to-Home-Screen steps only when no native prompt is available.
+  if (isIOS && !standalone) {
+    setTimeout(function () {
+      if (!deferredPrompt) { showButtons(); showBanner(); if (iosSteps) iosSteps.hidden = false; }
+    }, 800);
+  }
 
   function triggerInstall() {
     if (deferredPrompt) {
