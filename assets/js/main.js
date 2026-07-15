@@ -94,6 +94,29 @@
     });
   }
 
+  /* ---------- PWA: service worker + install prompt ---------- */
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", function () {
+      navigator.serviceWorker.register("sw.js").catch(function () {});
+    });
+  }
+  var installBtn = doc.getElementById("installBtn");
+  var deferredPrompt = null;
+  var standalone = window.matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
+  window.addEventListener("beforeinstallprompt", function (e) {
+    e.preventDefault();
+    deferredPrompt = e;
+    if (installBtn && !standalone) installBtn.hidden = false;
+  });
+  if (installBtn) {
+    installBtn.addEventListener("click", function () {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.finally(function () { deferredPrompt = null; installBtn.hidden = true; });
+    });
+  }
+  window.addEventListener("appinstalled", function () { if (installBtn) installBtn.hidden = true; });
+
   /* ---------- Year ---------- */
   var y = doc.getElementById("year");
   if (y) y.textContent = new Date().getFullYear();
