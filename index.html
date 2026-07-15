@@ -63,7 +63,27 @@
     <a href="#process"><span class="num">04</span>Process</a>
     <a href="#studio"><span class="num">05</span>Studio</a>
     <a href="portal/index.html"><span class="num">06</span>Sign In</a>
+    <button class="btn btn--ghost-light" id="installBtnMenu" hidden style="margin-top:22px;align-self:flex-start">Install App</button>
     <a class="btn btn--accent" href="#contact">Start a Conversation</a>
+  </div>
+
+  <!-- Install banner (Android/desktop native prompt · iOS manual steps) -->
+  <div class="install-banner" id="installBanner" hidden>
+    <div class="install-banner__main">
+      <span class="install-banner__icon"><img src="assets/icons/icon-192.png" alt="" /></span>
+      <div class="install-banner__txt">
+        <b>Install the app</b>
+        <span>Add All Things REELestate to your home screen for one-tap access.</span>
+        <div class="ios-steps" id="iosSteps" hidden>
+          <span>1. Tap the <svg class="ios-share" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V4M12 4L8.5 7.5M12 4l3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 10H5.5A1.5 1.5 0 004 11.5v7A1.5 1.5 0 005.5 20h13a1.5 1.5 0 001.5-1.5v-7A1.5 1.5 0 0018.5 10H18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg> Share button</span>
+          <span>2. Choose <b>Add to Home Screen</b></span>
+        </div>
+      </div>
+    </div>
+    <div class="install-banner__act">
+      <button class="btn btn--accent btn--sm" id="installGo">Install</button>
+      <button class="install-banner__close" id="installClose" aria-label="Dismiss">&times;</button>
+    </div>
   </div>
 
   <span id="top"></span>

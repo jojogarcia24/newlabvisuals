@@ -607,6 +607,38 @@ section { position: relative; }
 @media (max-width: 780px){ .footer__top { grid-template-columns: 1fr; gap: 30px; } }
 
 /* =============================================================
+   INSTALL BANNER
+   ============================================================= */
+.install-banner{
+  position:fixed; left:50vw; bottom:16px; transform:translateX(-50%);
+  z-index:95; width:min(520px, calc(100vw - 24px)); box-sizing:border-box;
+  display:flex; align-items:center; gap:16px; justify-content:space-between;
+  background:var(--ink); color:var(--paper);
+  border:1px solid var(--hair-light); border-radius:16px; overflow:hidden;
+  padding:14px 16px; box-shadow:0 30px 60px -24px rgba(0,0,0,.55);
+  animation:banner-up .6s var(--ease) both;
+}
+@keyframes banner-up{ from{ opacity:0; transform:translateX(-50%) translateY(16px) } to{ opacity:1; transform:translateX(-50%) translateY(0) } }
+.install-banner__main{ display:flex; align-items:center; gap:14px; min-width:0; flex:1; }
+.install-banner__icon img{ width:44px; height:44px; border-radius:11px; }
+.install-banner__txt{ display:flex; flex-direction:column; gap:2px; min-width:0; }
+.install-banner__txt b{ font-size:14px; font-weight:700; }
+.install-banner__txt > span{ font-size:12.5px; color:var(--cream-dim); }
+.ios-steps{ display:flex; flex-direction:column; gap:3px; margin-top:8px; }
+.ios-steps span{ font-size:12.5px; color:var(--paper); display:inline-flex; align-items:center; gap:6px; }
+.ios-steps b{ color:var(--accent-2); }
+.ios-share{ width:16px; height:16px; stroke:var(--accent-2); color:var(--accent-2); vertical-align:middle; }
+.install-banner__act{ display:flex; align-items:center; gap:8px; flex-shrink:0; }
+.install-banner__close{ width:30px; height:30px; border-radius:50%; color:var(--cream-dim); font-size:18px; line-height:1; display:grid; place-items:center; }
+.install-banner__close:hover{ background:var(--ink-2); color:var(--paper); }
+.install-banner--expanded{ align-items:flex-start; }
+@media (max-width:520px){
+  .install-banner{ flex-direction:column; align-items:stretch; gap:12px; }
+  .install-banner__act{ justify-content:space-between; }
+  .install-banner__act .btn{ flex:1; }
+}
+
+/* =============================================================
    RESPONSIVE
    ============================================================= */
 @media (max-width: 1080px){

@@ -94,28 +94,61 @@
     });
   }
 
-  /* ---------- PWA: service worker + install prompt ---------- */
+  /* ---------- PWA: service worker + install ---------- */
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", function () {
       navigator.serviceWorker.register("sw.js").catch(function () {});
     });
   }
-  var installBtn = doc.getElementById("installBtn");
+
   var deferredPrompt = null;
   var standalone = window.matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
+  var ua = navigator.userAgent || "";
+  var isIOS = /iP(hone|ad|od)/i.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  var isAndroid = /Android/i.test(ua);
+  var installBtns = ["installBtn", "installBtnMenu"].map(function (id) { return doc.getElementById(id); }).filter(Boolean);
+
+  var banner = doc.getElementById("installBanner");
+  var iosSteps = doc.getElementById("iosSteps");
+  var DISMISS_KEY = "atr_install_dismissed";
+  function dismissed() {
+    try { return Date.now() - parseInt(localStorage.getItem(DISMISS_KEY) || "0", 10) < 6048e5; } catch (e) { return false; } // 7 days
+  }
+  function showButtons() { installBtns.forEach(function (b) { b.hidden = false; }); }
+  function hideButtons() { installBtns.forEach(function (b) { b.hidden = true; }); }
+  function showBanner() { if (banner && !dismissed()) banner.hidden = false; }
+  function hideBanner() { if (banner) banner.hidden = true; }
+
+  // Android / desktop Chromium: native prompt available.
   window.addEventListener("beforeinstallprompt", function (e) {
     e.preventDefault();
     deferredPrompt = e;
-    if (installBtn && !standalone) installBtn.hidden = false;
+    if (!standalone) { showButtons(); showBanner(); }
   });
-  if (installBtn) {
-    installBtn.addEventListener("click", function () {
-      if (!deferredPrompt) return;
+
+  // iOS Safari never fires the event — offer manual Add-to-Home-Screen.
+  if (isIOS && !standalone) { showButtons(); showBanner(); if (iosSteps) iosSteps.hidden = false; }
+
+  function triggerInstall() {
+    if (deferredPrompt) {
       deferredPrompt.prompt();
-      deferredPrompt.userChoice.finally(function () { deferredPrompt = null; installBtn.hidden = true; });
-    });
+      deferredPrompt.userChoice.finally(function () { deferredPrompt = null; hideButtons(); hideBanner(); });
+    } else if (isIOS && iosSteps) {
+      iosSteps.hidden = false;
+      if (banner) { banner.hidden = false; banner.classList.add("install-banner--expanded"); }
+    }
   }
-  window.addEventListener("appinstalled", function () { if (installBtn) installBtn.hidden = true; });
+  installBtns.forEach(function (b) { b.addEventListener("click", triggerInstall); });
+
+  var installGo = doc.getElementById("installGo");
+  if (installGo) installGo.addEventListener("click", triggerInstall);
+  var installClose = doc.getElementById("installClose");
+  if (installClose) installClose.addEventListener("click", function () {
+    hideBanner();
+    try { localStorage.setItem(DISMISS_KEY, String(Date.now())); } catch (e) {}
+  });
+
+  window.addEventListener("appinstalled", function () { hideButtons(); hideBanner(); });
 
   /* ---------- Year ---------- */
   var y = doc.getElementById("year");
