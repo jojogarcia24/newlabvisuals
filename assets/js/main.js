@@ -28,11 +28,14 @@
       };
       ["loadedmetadata", "canplay", "canplaythrough"].forEach(function (ev) { heroVideo.addEventListener(ev, tryPlay); });
       if (heroVideo.readyState >= 2) { tryPlay(); reveal(); }
-      // Fallback for iOS Low Power Mode / blocked autoplay: start on the first interaction.
+      heroVideo.load();
+      // Fallback for iOS Low Power Mode / blocked autoplay: keep trying on any
+      // interaction until it actually plays, then stop listening.
+      var kickEvents = ["touchstart", "pointerdown", "click", "scroll", "keydown"];
       var kick = function () { tryPlay(); };
-      ["touchstart", "pointerdown", "click", "scroll"].forEach(function (ev) {
-        window.addEventListener(ev, kick, { once: true, passive: true });
-      });
+      var stopKicks = function () { kickEvents.forEach(function (ev) { window.removeEventListener(ev, kick); }); };
+      kickEvents.forEach(function (ev) { window.addEventListener(ev, kick, { passive: true }); });
+      heroVideo.addEventListener("playing", stopKicks);
       // Resume when returning to the tab.
       doc.addEventListener("visibilitychange", function () { if (!doc.hidden) tryPlay(); });
     }
